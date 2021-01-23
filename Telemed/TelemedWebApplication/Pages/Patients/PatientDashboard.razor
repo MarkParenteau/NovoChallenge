@@ -1,0 +1,96 @@
+﻿@page "/patientdashboard"
+@inject PatientService patientService
+@using TelemedWebApplication.Data
+@using Utils.Models
+@using System.Timers
+
+
+<h1>Patients</h1>
+
+@if (patients == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <a class="btn btn-primary" href="/patientcreate" role="button">Create a patient</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Cardiac Frequency</th>
+                <th>SpO2</th>
+                <th>Temperature</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var patient in patients)
+            {
+            <tr>
+                <td>@patient.FirstName</td>
+                <td>@patient.LastName</td>
+                @if (patient.VitalSigns != null && patient.VitalSigns.Count > 0)
+                {
+                    <td>@patient.VitalSigns.OrderByDescending(vs => vs.CreationTime).Take(1).FirstOrDefault().CardiacFrequency</td>
+                    <td>@patient.VitalSigns.OrderByDescending(vs => vs.CreationTime).Take(1).FirstOrDefault().SpO2</td>
+                    <td>@patient.VitalSigns.OrderByDescending(vs => vs.CreationTime).Take(1).FirstOrDefault().Temperature</td>
+                }
+                else
+                {
+                    <td>Undefined</td>
+                    <td>Undefined</td>
+                    <td>Undefined</td>
+                }
+
+                <td>
+                    <NavLink class="nav-link" href=@($"patientDetail/{patient.Id}")>
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Details
+                    </NavLink>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" @onclick="@(e => DeletePatient(patient.Id))">Delete</button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public List<Patient> patients { get; set; }
+    private Timer timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await patientService.GetPatients();
+        StartReadingsTimer();
+    }
+
+    //Create a timer to simulate readings on patients
+    private void StartReadingsTimer()
+    {
+        timer = new Timer();
+        timer.Elapsed += new ElapsedEventHandler(GetPatientReadings);
+        timer.Interval = 5000;
+        timer.Start();
+    }
+
+    private void GetPatientReadings(object sender, EventArgs e)
+    {
+        foreach (var patient in patients)
+        {
+            var test = patientService.TakeNewVitalSignReading(patient).Result;
+        }
+    }
+
+    private void DeletePatient(string patientId)
+    {
+        //Should be a confirmation message here
+        patientService.DeletePatient(patientId);
+        patients.Remove(patients.Where(p => p.Id == patientId).FirstOrDefault());
+        StateHasChanged();
+    }
+}
+
+

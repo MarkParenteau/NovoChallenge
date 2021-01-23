@@ -1,0 +1,54 @@
+﻿@page "/patientdashboard"
+@inject PatientService patientService
+@using TelemedWebApp.Data
+@using Utils.Models
+
+
+<h1>Services</h1>
+
+@if (patients == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Cardiac Frequency</th>
+                <th>SpO2</th>
+                <th>Temperature</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var patient in patients)
+            {
+            <tr>
+                <td>@patient.FirstName</td>
+                <td>@patient.LastName</td>
+                <td>@patient.vitalSigns.OrderByDescending(vs => vs.CreationTime).Take(1).FirstOrDefault().CardiacFrequency</td>
+                <td>@patient.vitalSigns.OrderByDescending(vs => vs.CreationTime).Take(1).FirstOrDefault().SpO2</td>
+                <td>@patient.vitalSigns.OrderByDescending(vs => vs.CreationTime).Take(1).FirstOrDefault().Temperature</td>
+                <td>
+                    <NavLink class="nav-link" href=@($"patientDetail/{patient.Id}")>
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Details
+                    </NavLink>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public List<Patient> patients { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await patientService.GetPatients();
+    }
+}
+
+
