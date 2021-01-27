@@ -40,6 +40,15 @@ namespace TelemedWebApplication
               })
               .AddBootstrapProviders()
               .AddFontAwesomeIcons();
+
+            services
+            .AddFluentEmail("markparenteautest@gmail.com") //Obviously this wouldn't be the email sender :P
+            .AddRazorRenderer()
+            .AddSmtpSender(new System.Net.Mail.SmtpClient("smtp.gmail.com",587)
+            {
+                Credentials = new System.Net.NetworkCredential("markparenteautest@gmail.com", "OOPYnOVdGZMe-orBt23A"),
+                EnableSsl = true
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

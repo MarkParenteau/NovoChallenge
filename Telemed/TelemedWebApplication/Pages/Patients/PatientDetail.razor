@@ -45,8 +45,10 @@ else
             <InputText id="email" class="form-control" placeholder="Enter email" @bind-Value="patient.Email" />
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Update Information</button>
     </EditForm>
+
+    <a class="btn btn-primary" href="/emailsender/@patient.Id" role="button">Send a email to this patient</a>
 
 
     @if (patient.VitalSigns != null && patient.VitalSigns.Count > 0)
@@ -99,7 +101,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         lineChart = new LineChart<double>();
-        //There is most likely a way to just pass the patient as an object instead of calling the API here
+        //There is most likely a way to just pass the patient as an object instead of calling the API here - Could store all patients in memory
         patient = await patientService.GetPatient(patientId);
     }
 

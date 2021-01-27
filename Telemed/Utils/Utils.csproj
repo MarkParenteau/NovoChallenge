@@ -104,10 +104,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Database\DatabaseSettings.cs" />
     <Compile Include="Database\Models\Patient.cs" />
     <Compile Include="Database\Models\VitalSign.cs" />
+    <Compile Include="Models\EmailModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -105,7 +105,7 @@ using Utils.Models;
         }
         #pragma warning restore 1998
 #nullable restore
-#line 91 "B:\dev\repo\NovoChallenge\MarkParenteau\NovoChallenge\Telemed\TelemedWebApplication\Pages\Patients\PatientDetail.razor"
+#line 93 "B:\dev\repo\NovoChallenge\MarkParenteau\NovoChallenge\Telemed\TelemedWebApplication\Pages\Patients\PatientDetail.razor"
        
     [Parameter]
     public string patientId { get; set; }
@@ -117,7 +117,7 @@ using Utils.Models;
     protected override async Task OnInitializedAsync()
     {
         lineChart = new LineChart<double>();
-        //There is most likely a way to just pass the patient as an object instead of calling the API here
+        //There is most likely a way to just pass the patient as an object instead of calling the API here - Could store all patients in memory
         patient = await patientService.GetPatient(patientId);
     }
 

@@ -1,0 +1,59 @@
+﻿<h3>EmailCreate</h3>
+
+@page "/emailsender/{patientId}"
+@inject PatientService patientService
+@inject NavigationManager NavManager
+@inject FluentEmail.Core.IFluentEmail  email
+@using TelemedWebApplication.Data
+@using Utils.Models
+@using System.Net.Mail
+
+<h1> Send a email </h1>
+@{ 
+    <EditForm class="form-group" Model="@emailModel" OnValidSubmit="@HandleSubmit">
+        <DataAnnotationsValidator />
+        <Blazorise.ValidationSummary />
+        <div class="form-group">
+            <label for="Subject">Subject</label>
+            <InputText id="Subject" class="form-control" placeholder="Subject" @bind-Value="emailModel.Subject" />
+        </div>
+
+        <div class="form-group">
+            <label for="Message">Message</label>
+            <InputTextArea id="Message" class="form-control" placeholder="Message" @bind-Value="emailModel.Body" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+}
+
+@code{
+
+    //I couldn't find another way to get the patient in here. I would have liked to pass the whole patient object somehow, but couldn't figure it out in the small amount of time I had to put on this.
+    //So for now, I'll just pass the ID and fetch it on the server so that it works
+    [Parameter]
+    public string patientId { get; set; }
+
+    //Keeping the email super simple for now. I would definitely ask what kind of email are we trying to send, do we want to send any information on vital signs etc.
+    //If yes, then I'd look for a way to pass the data/charts around in an email (Either through a excel sheet or the charts directly, or something along those lines)
+    private EmailModel emailModel { get; set; }
+    private Patient patient { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        emailModel = new EmailModel();
+        patient = await patientService.GetPatient(patientId);
+    }
+
+    private void HandleSubmit()
+    {
+        email
+            .To(patient.Email)
+            .Subject(emailModel.Subject)
+            .Body(emailModel.Body)
+            .SendAsync();
+
+        NavManager.NavigateTo($"/patientdetail/{patientId}");
+    }
+}
+

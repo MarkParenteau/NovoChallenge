@@ -10,7 +10,8 @@ using Utils.Models;
 namespace TelemedWebApplication.Data
 {
     public class PatientService
-    {
+    { 
+
         public Task<List<Patient>> GetPatients()
         {
             HttpClient client = new HttpClient();
@@ -38,6 +39,9 @@ namespace TelemedWebApplication.Data
                 callResult = response.Content.ReadAsStringAsync().Result;
                 patient = JsonConvert.DeserializeObject<Patient>(callResult);
             }
+
+            //Trim some Vital signs info so help the charts look a bit better. This would most likely be a bunch of filters in an actual project
+            patient.VitalSigns = patient.VitalSigns.OrderByDescending(vs => vs.CreationTime).Take(20).OrderBy(vs => vs.CreationTime).ToList();
 
             return Task.FromResult(patient);
         }
@@ -104,7 +108,6 @@ namespace TelemedWebApplication.Data
             vitalSign.SpO2 = random.Next(80, 100);
             vitalSign.CreationTime = DateTime.Now;
             patient.VitalSigns.Add(vitalSign);
-
 
             //In theory, we might consider only updating the patient every few reads to not put as much pressure on the API servers,
             // but since this is more of a demo  than anything, I'll let it update every time
